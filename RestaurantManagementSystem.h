@@ -14,6 +14,7 @@ class RestaurantManagementSystem {
 private:
     std::vector<RawMaterial> rawMaterials;
     std::vector<Dish> dishes;
+    std::vector<Dish> ordered_dishes;
     std::vector<Customer> customers;
     std::vector<std::shared_ptr<User>> users;
 
@@ -26,13 +27,6 @@ public:
     void showAllCustomers() const;
     void showAllRawMaterials() const;
     void showAllDishes() const;
-    void addRawMaterial();
-    void modifyRawMaterial();
-    void deleteRawMaterial();
-    void calculateProfit();
-    void runAsManager();
-    void runAsChef();
-    void runAsCustomer();
     void addCustomer(const Customer& customer);
     void addRawMaterial(const RawMaterial& material);
     void addDish(const Dish& dish);

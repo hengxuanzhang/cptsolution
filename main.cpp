@@ -1,7 +1,7 @@
 #include "RestaurantManagementSystem.h"
 #include <iostream>
 
-// 主函数
+// Main function
 int main() {
     RestaurantManagementSystem system;
     system.run();

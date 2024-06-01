@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <sstream>
 
 class Dish {
 private:
@@ -11,7 +12,6 @@ private:
     std::string name;
     double price;
     std::vector<int> rawMaterialIds;
-    std::vector<std::string> ingredients;
 
 public:
     Dish(int id, const std::string& name, double price, const std::vector<int>& rawMaterialIds);
@@ -21,13 +21,7 @@ public:
     double getPrice() const;
     void setPrice(double price);
     const std::vector<int>& getRawMaterialIds() const;
-    void display() const {
-        std::cout << "Dish: " << name << ", Ingredients: ";
-        for (const auto& ingredient : ingredients) {
-            std::cout << ingredient << " ";
-        }
-        std::cout << ", Price: $" << price << std::endl;
-    }
+    void display() const;
 };
 
 #endif // DISH_H

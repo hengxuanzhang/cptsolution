@@ -16,9 +16,8 @@ public:
     int getId() const { return this->id; }
     std::string getName() const { return this->name; }
     void setName(std::string username) { this->name = username; };
-    virtual void displayMenu() const = 0;
     void display() const {
-        std::cout << userCategory() << ": " << name << std::endl;
+        std::cout << userCategory() << id << ": " << name << std::endl;
     }
 };
 
