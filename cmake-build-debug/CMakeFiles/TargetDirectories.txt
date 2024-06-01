@@ -1,3 +1,0 @@
-C:/Users/27224/Desktop/qjl/cmake-build-debug/CMakeFiles/RestaurantManagementSystem.dir
-C:/Users/27224/Desktop/qjl/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/27224/Desktop/qjl/cmake-build-debug/CMakeFiles/rebuild_cache.dir

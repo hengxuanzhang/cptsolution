@@ -3,20 +3,21 @@
 #include <algorithm>
 #include <memory>
 
-// 构造函数
+// Constructor
 RestaurantManagementSystem::RestaurantManagementSystem() = default;
 
+// Determine the role and privilege of a user
 std::string RestaurantManagementSystem::findUserCategory(std::string& username, std::vector<std::shared_ptr<User>>& users) {
     for (const auto& user : users) {
         if (user->getName() == username) {
             return user->userCategory();
         }
     }
-    std::cout << "User not found" << std::endl;
+    std::cout << "User not found." << std::endl;
     return "";
 }
 
-// 显示所有顾客
+// Show all customers
 void RestaurantManagementSystem::showAllCustomers() const {
     std::cout << "Users in the system:" << std::endl;
     for (const auto& user : users) {
@@ -26,7 +27,7 @@ void RestaurantManagementSystem::showAllCustomers() const {
     }
 }
 
-// 显示所有原材料
+// Show all raw materials
 void RestaurantManagementSystem::showAllRawMaterials() const {
     std::cout << "Raw materials in the inventory:" << std::endl;
     for (const auto& material : rawMaterials) {
@@ -34,78 +35,105 @@ void RestaurantManagementSystem::showAllRawMaterials() const {
     }
 }
 
-// 显示所有菜品
+// Show all dishes
 void RestaurantManagementSystem::showAllDishes() const {
     std::cout << "Dishes available in the menu:" << std::endl;
-    for (const Dish& dish : dishes) {
+    for (const auto& dish : dishes) {
         dish.display();
     }
 }
 
 void RestaurantManagementSystem::addCustomer(const Customer& customer) {
     users.push_back(std::make_shared<Customer>(customer.getId(), customer.getName()));
+    std::cout << "Added successfully.\n";
 }
 
 void RestaurantManagementSystem::addRawMaterial(const RawMaterial& material) {
     rawMaterials.push_back(material);
+    std::cout << "Added successfully.\n";
 }
 
 void RestaurantManagementSystem::addDish(const Dish& dish) {
     if (isDishIdUnique(dish.getId()) && isDishNameUnique(dish.getName())) {
         dishes.push_back(dish);
+        std::cout << "Added successfully.\n";
     } else {
-        std::cout << "Dish ID or Name already exists." << std::endl;
+        std::cout << "Dish ID or Name already exists.\n";
     }
 }
 
 void RestaurantManagementSystem::deleteCustomer(int id, std::string username) {
-    // lambda函数, 传入 id,username 并判断, 将 return true 的元素移动到容器的末尾并删除
+    // Pass id and username to the remove_if function, if returns true, the element is moved to the end of the vector and deleted
+    std::vector<std::shared_ptr<User>> temp_users(users);
     auto new_end = std::remove_if(users.begin(), users.end(),
                                   [id, &username](const std::shared_ptr<User>& user) {
                                       return user->getId() == id && user->getName() == username;
                                   });
 
     users.resize(std::distance(users.begin(), new_end));
+    if (temp_users.size() != users.size()) {
+        std::cout << "Deleted successfully.\n";
+    }
+    else { std::cout << "Wrong id or name.\n"; }
 }
 
 void RestaurantManagementSystem::deleteRawMaterial(const std::string& name) {
-    // 将所有外部变量"[&]"传参给 lambda 函数并判断, 将 return true 的元素移动到容器的末尾并删除
+    std::vector<RawMaterial> temp_rawMaterials(rawMaterials);
+    // Pass properties to the remove_if function, if returns true, the element is moved to the end of the vector and deleted
     rawMaterials.erase(std::remove_if(rawMaterials.begin(), rawMaterials.end(),
                                       [&](const RawMaterial& material) { return material.getName() == name; }),
                        rawMaterials.end());
+
+    if (temp_rawMaterials.size() != rawMaterials.size()) {
+        std::cout << "Deleted successfully.\n";
+    }
+    else { std::cout << "Wrong name.\n"; }
 }
 
 void RestaurantManagementSystem::deleteDish(int id) {
+    std::vector<Dish> temp_dish(dishes);
+    // Pass properties to the remove_if function, if returns true, the element is moved to the end of the vector and deleted
     dishes.erase(std::remove_if(dishes.begin(), dishes.end(),
                                 [&](const Dish& dish) { return dish.getId() == id; }),
                  dishes.end());
+
+    if (temp_dish.size() != dishes.size()) {
+        std::cout << "Deleted successfully.\n";
+    }
+    else { std::cout << "Wrong id.\n"; }
 }
 
 void RestaurantManagementSystem::modifyCustomer(int id, std::string username) {
     for (auto& user : users) {
-        if (user->getId() == id && user->userCategory() == "customer") {
+        if (user->getId() == id && user->userCategory() == "Customer") {
             user->setName(username);
-            break;
+            std::cout << "Modified successfully.\n";
+            return;
         }
     }
+    std::cout << "Invalid id.\n";
 }
 
 void RestaurantManagementSystem::modifyRawMaterial(const std::string& name, int newQuantity) {
     for (auto& material : rawMaterials) {
         if (material.getName() == name) {
             material.setQuantity(newQuantity);
-            break;
+            std::cout << "Modified successfully.\n";
+            return;
         }
     }
+    std::cout << "Invalid name.\n";
 }
 
 void RestaurantManagementSystem::modifyDish(int id, double newPrice) {
     for (auto& dish : dishes) {
         if (dish.getId() == id) {
             dish.setPrice(newPrice);
-            break;
+            std::cout << "Modified successfully.\n";
+            return;
         }
     }
+    std::cout << "Invalid id.\n";
 }
 
 bool RestaurantManagementSystem::isDishIdUnique(int id) const {
@@ -117,11 +145,22 @@ bool RestaurantManagementSystem::isDishNameUnique(const std::string& name) const
 }
 
 void RestaurantManagementSystem::placeOrder(const std::vector<int>& order) {
-    // 实现下订单的逻辑
+    for (int id : order) {
+        for (const auto& dish : dishes) {
+            if (dish.getId() == id) {
+                ordered_dishes.emplace_back(dish);
+                break;
+            }
+        }
+    }
 }
 
 void RestaurantManagementSystem::checkOut() {
-    // 实现结账的逻辑
+    double total_price = 0;
+    for (const Dish& i : ordered_dishes) {
+        total_price += i.getPrice();
+    }
+    std::cout << "You need to pay " << total_price << " dollars." << std::endl;
 }
 
 void RestaurantManagementSystem::managerMenu() {
@@ -229,7 +268,7 @@ void RestaurantManagementSystem::managerMenu() {
                 std::cin >> id;
                 std::cout << "Enter dish name: ";
                 std::cin >> name;
-                std::cout << "Enter ingredients (end with '0'): ";
+                std::cout << "Enter ingredient IDs (split with spaces and end with '0'): ";
                 while (true) {
                     std::cin >> ingredient;
                     if (ingredient == 0) break;
@@ -263,7 +302,7 @@ void RestaurantManagementSystem::managerMenu() {
             default:
                 std::cout << "Invalid choice. Please try again.\n";
         }
-    } while (choice != 9);
+    } while (choice != 13);
 }
 
 void RestaurantManagementSystem::chefMenu() {
@@ -332,7 +371,7 @@ void RestaurantManagementSystem::chefMenu() {
                 std::cin >> id;
                 std::cout << "Enter dish name: ";
                 std::cin >> name;
-                std::cout << "Enter ingredients (end with '0'): ";
+                std::cout << "Enter ingredient IDs (split with spaces and end with '0'): ";
                 while (true) {
                     std::cin >> ingredient;
                     if (ingredient == 0) break;
@@ -387,21 +426,20 @@ void RestaurantManagementSystem::customerMenu() {
             case 2: {
                 std::vector<int> order;
                 int id;
-                std::cout << "Enter dish IDs to order (end with -1): ";
+                showAllDishes();
+                std::cout << "Enter dish IDs to order (split with spaces and end with -1): ";
                 while (true) {
                     std::cin >> id;
                     if (id == -1) break;
                     order.push_back(id);
                 }
-                // 此处假设存在下单的方法, 可以进一步实现该功能
                 placeOrder(order);
                 std::cout << "Order placed successfully.\n";
                 break;
             }
             case 3:
-                // 此处假设存在结账的方法, 可以进一步实现该功能
                 checkOut();
-                std::cout << "Check-out successful.\n";
+                std::cout << "Check-out successfully.\n";
                 break;
             case 4:
                 std::cout << "Exiting Customer Menu.\n";
@@ -412,22 +450,22 @@ void RestaurantManagementSystem::customerMenu() {
     } while (choice != 4);
 }
 
-// 主运行逻辑
+// Running Function
 void RestaurantManagementSystem::run() {
-    // 初始化系统用户和顾客
+    // Initialize users
     users.push_back(std::make_shared<Manager>(1, "Manager1"));
-    users.push_back(std::make_shared<Chef>(1, "Gu"));
-    users.push_back(std::make_shared<Chef>(2, "Liu"));
-    users.push_back(std::make_shared<Customer>(1, "Gang"));
-    users.push_back(std::make_shared<Customer>(2, "Ming"));
-    users.push_back(std::make_shared<Customer>(3, "Wang"));
+    users.push_back(std::make_shared<Chef>(2, "Gu"));
+    users.push_back(std::make_shared<Chef>(3, "Liu"));
+    users.push_back(std::make_shared<Customer>(4, "Gang"));
+    users.push_back(std::make_shared<Customer>(5, "Ming"));
+    users.push_back(std::make_shared<Customer>(6, "Wang"));
 
-    // 初始化原材料
-    rawMaterials.emplace_back(1, "Tomato", 100.0, 10);
-    rawMaterials.emplace_back(2, "Cheese", 50.0, 20);
-    rawMaterials.emplace_back(3, "Dough", 30.0, 15);
+    // Initialize raw materials
+    rawMaterials.emplace_back(1, "Tomato", 1.0, 10);
+    rawMaterials.emplace_back(2, "Cheese", 2.0, 20);
+    rawMaterials.emplace_back(3, "Dough", 1.5, 15);
 
-    // 初始化菜品
+    // Initialize dishes
     dishes.emplace_back(1, "Pizza", 30.0, std::vector<int>{3, 1, 2});
     dishes.emplace_back(2, "Salad", 40.0, std::vector<int>{1, 2});
 

@@ -10,5 +10,5 @@ int RawMaterial::getQuantity() const { return quantity; }
 void RawMaterial::setPrice(double price) { this->price = price; }
 void RawMaterial::setQuantity(int quantity) { this->quantity = quantity; }
 void RawMaterial::display() const {
-    std::cout << "Name: " << this->name << ", Quantity: " << this->quantity << std::endl;
+    std::cout << id << ": " << this->name << ", Price: " << this->price << ", Quantity: " << this->quantity << std::endl;
 }
